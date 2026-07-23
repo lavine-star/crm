@@ -273,19 +273,148 @@
             border-radius: 20px;
             box-shadow: 0 16px 34px -28px rgba(15, 23, 42, .32), 0 1px 2px rgba(15, 23, 42, .04);
         }
+        #view-reports {
+            position: relative;
+            min-height: 100%;
+        }
+        #view-reports::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(180deg, rgba(219, 234, 254, .66), rgba(243, 245, 249, 0) 330px),
+                linear-gradient(135deg, rgba(20, 184, 166, .08), rgba(255,255,255,0) 42%);
+            pointer-events: none;
+        }
+        #report-container {
+            position: relative;
+            z-index: 1;
+        }
         .stat-menu-card {
+            position: relative;
+            overflow: hidden;
             border-radius: 28px;
-            box-shadow: 0 18px 38px -30px rgba(15, 23, 42, .28), 0 1px 2px rgba(15, 23, 42, .04);
+            border: 1px solid rgba(226, 232, 240, .74);
+            box-shadow: 0 22px 44px -34px rgba(15, 23, 42, .34), 0 1px 2px rgba(15, 23, 42, .04);
+        }
+        .stat-menu-card::before {
+            content: "";
+            position: absolute;
+            inset: 0 0 auto 0;
+            height: 112px;
+            background:
+                linear-gradient(135deg, var(--stat-soft-a), rgba(255,255,255,0) 64%),
+                radial-gradient(circle at 88% 18%, var(--stat-soft-b), rgba(255,255,255,0) 48%);
+            pointer-events: none;
+        }
+        .stat-menu-card::after {
+            content: "";
+            position: absolute;
+            right: 18px;
+            top: 16px;
+            width: 82px;
+            height: 82px;
+            opacity: .34;
+            background-image: linear-gradient(135deg, var(--stat-line) 1px, transparent 1px);
+            background-size: 11px 11px;
+            mask-image: linear-gradient(135deg, #000 0%, transparent 78%);
+            pointer-events: none;
+        }
+        .stat-card-trade {
+            --stat-accent: #2563eb;
+            --stat-accent-2: #0f766e;
+            --stat-soft-a: rgba(37, 99, 235, .12);
+            --stat-soft-b: rgba(45, 212, 191, .16);
+            --stat-line: rgba(37, 99, 235, .26);
+        }
+        .stat-card-report {
+            --stat-accent: #7c3aed;
+            --stat-accent-2: #d97706;
+            --stat-soft-a: rgba(124, 58, 237, .12);
+            --stat-soft-b: rgba(251, 191, 36, .16);
+            --stat-line: rgba(124, 58, 237, .24);
         }
         .stat-menu-item {
             min-height: 96px;
             min-width: 0;
+            border-radius: 20px;
+            padding: 5px 3px 6px;
+        }
+        .stat-menu-item:active { background: rgba(248, 250, 252, .9); }
+        @media (hover: hover) {
+            .stat-menu-item:hover {
+                background: rgba(248, 250, 252, .78);
+                transform: translateY(-2px);
+            }
         }
         .stat-menu-icon {
-            width: 62px;
-            height: 62px;
-            border-radius: 18px;
-            box-shadow: inset 0 1px 0 rgba(255, 255, 255, .78), 0 10px 22px -18px rgba(15, 23, 42, .4);
+            position: relative;
+            width: 60px;
+            height: 60px;
+            border-radius: 19px;
+            color: var(--tile-fg);
+            background:
+                linear-gradient(145deg, rgba(255,255,255,.72), rgba(255,255,255,.18)),
+                linear-gradient(135deg, var(--tile-a), var(--tile-b));
+            border: 1px solid rgba(255, 255, 255, .76);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, .88), 0 16px 28px -22px var(--tile-shadow);
+        }
+        .stat-menu-icon::before {
+            content: "";
+            position: absolute;
+            inset: 7px;
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, .46);
+        }
+        .stat-menu-icon svg {
+            position: relative;
+            z-index: 1;
+            stroke-width: 2.45;
+        }
+        .stat-page-hero {
+            position: relative;
+            overflow: hidden;
+            border-radius: 26px;
+            color: #fff;
+            background:
+                linear-gradient(135deg, rgba(15, 23, 42, .96), rgba(30, 64, 175, .92) 54%, rgba(13, 148, 136, .9));
+            box-shadow: 0 22px 44px -30px rgba(15, 23, 42, .6);
+        }
+        .stat-page-hero::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            opacity: .28;
+            background-image:
+                linear-gradient(rgba(255,255,255,.18) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,.18) 1px, transparent 1px);
+            background-size: 18px 18px;
+            mask-image: linear-gradient(90deg, rgba(0,0,0,.92), transparent 76%);
+        }
+        .stat-page-hero::after {
+            content: "";
+            position: absolute;
+            right: -34px;
+            top: -42px;
+            width: 170px;
+            height: 170px;
+            border-radius: 42px;
+            transform: rotate(18deg);
+            background: rgba(255, 255, 255, .13);
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,.12);
+        }
+        .stat-section-title {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .stat-section-title::before {
+            content: "";
+            width: 5px;
+            height: 22px;
+            border-radius: 999px;
+            background: linear-gradient(180deg, var(--stat-accent), var(--stat-accent-2));
         }
         .subtle-card {
             background: rgba(248, 250, 252, .9);
@@ -2395,48 +2524,69 @@
         const statMenuSections = [
             {
                 title: "交易",
+                kind: "trade",
                 items: [
-                    { label: "收款帐号", icon: "wallet", tint: "bg-blue-50 text-brand-600" },
-                    { label: "收款入账", icon: "banknote", tint: "bg-emerald-50 text-emerald-600" },
-                    { label: "全球付款", icon: "globe-2", tint: "bg-cyan-50 text-cyan-600" },
-                    { label: "结汇付款", icon: "landmark", tint: "bg-amber-50 text-amber-600" },
-                    { label: "批量分发", icon: "send", tint: "bg-indigo-50 text-indigo-600" },
-                    { label: "货币兑换", icon: "coins", tint: "bg-orange-50 text-orange-500" },
-                    { label: "汇率管理", icon: "percent", tint: "bg-violet-50 text-violet-600" },
-                    { label: "结构化", icon: "layers", tint: "bg-slate-100 text-slate-600" },
-                    { label: "全球交易", icon: "globe-2", tint: "bg-blue-50 text-blue-600" },
-                    { label: "卡客户", icon: "user-round-check", tint: "bg-rose-50 text-rose-600" },
-                    { label: "卡交易", icon: "credit-card", tint: "bg-teal-50 text-teal-600" },
-                    { label: "卡NR", icon: "file-text", tint: "bg-fuchsia-50 text-fuchsia-600" }
+                    { label: "收款帐号", icon: "wallet", a: "#dbeafe", b: "#eef6ff", fg: "#2563eb", shadow: "rgba(37,99,235,.45)" },
+                    { label: "收款入账", icon: "banknote", a: "#dcfce7", b: "#f0fdf4", fg: "#059669", shadow: "rgba(5,150,105,.42)" },
+                    { label: "全球付款", icon: "globe-2", a: "#cffafe", b: "#ecfeff", fg: "#0891b2", shadow: "rgba(8,145,178,.42)" },
+                    { label: "结汇付款", icon: "landmark", a: "#fef3c7", b: "#fff7ed", fg: "#d97706", shadow: "rgba(217,119,6,.42)" },
+                    { label: "批量分发", icon: "send", a: "#e0e7ff", b: "#eef2ff", fg: "#4f46e5", shadow: "rgba(79,70,229,.42)" },
+                    { label: "货币兑换", icon: "coins", a: "#ffedd5", b: "#fff7ed", fg: "#f97316", shadow: "rgba(249,115,22,.42)" },
+                    { label: "汇率管理", icon: "percent", a: "#ede9fe", b: "#faf5ff", fg: "#7c3aed", shadow: "rgba(124,58,237,.42)" },
+                    { label: "结构化", icon: "layers", a: "#e2e8f0", b: "#f8fafc", fg: "#475569", shadow: "rgba(71,85,105,.34)" },
+                    { label: "全球交易", icon: "globe-2", a: "#dbeafe", b: "#ecfeff", fg: "#2563eb", shadow: "rgba(37,99,235,.42)" },
+                    { label: "卡客户", icon: "user-round-check", a: "#ffe4e6", b: "#fff1f2", fg: "#e11d48", shadow: "rgba(225,29,72,.36)" },
+                    { label: "卡交易", icon: "credit-card", a: "#ccfbf1", b: "#f0fdfa", fg: "#0f766e", shadow: "rgba(15,118,110,.42)" },
+                    { label: "卡NR", icon: "file-text", a: "#fae8ff", b: "#fdf4ff", fg: "#c026d3", shadow: "rgba(192,38,211,.34)" }
                 ]
             },
             {
                 title: "报表",
+                kind: "report",
                 items: [
-                    { label: "销售客情统计", icon: "line-chart", tint: "bg-blue-50 text-brand-600" },
-                    { label: "部门客情统计", icon: "building-2", tint: "bg-emerald-50 text-emerald-600" },
-                    { label: "销售业务统计", icon: "pie-chart", tint: "bg-amber-50 text-amber-600" },
-                    { label: "部门业务统计", icon: "layers", tint: "bg-violet-50 text-violet-600" }
+                    { label: "销售客情统计", icon: "line-chart", a: "#dbeafe", b: "#eff6ff", fg: "#2563eb", shadow: "rgba(37,99,235,.42)" },
+                    { label: "部门客情统计", icon: "building-2", a: "#dcfce7", b: "#f0fdf4", fg: "#059669", shadow: "rgba(5,150,105,.42)" },
+                    { label: "销售业务统计", icon: "pie-chart", a: "#fef3c7", b: "#fff7ed", fg: "#d97706", shadow: "rgba(217,119,6,.42)" },
+                    { label: "部门业务统计", icon: "layers", a: "#ede9fe", b: "#faf5ff", fg: "#7c3aed", shadow: "rgba(124,58,237,.42)" }
                 ]
             }
         ];
+        const totalStatMenus = statMenuSections.reduce((sum, section) => sum + section.items.length, 0);
         const renderStatMenuItem = item => `
           <button type="button" class="stat-menu-item pressable flex w-full flex-col items-center text-center" data-toast="${escapeHtml(item.label)}已打开">
-            <span class="stat-menu-icon ${item.tint} flex items-center justify-center">
+            <span class="stat-menu-icon flex items-center justify-center" style="--tile-a:${item.a};--tile-b:${item.b};--tile-fg:${item.fg};--tile-shadow:${item.shadow};">
               <i data-lucide="${item.icon}" class="w-8 h-8"></i>
             </span>
-            <span class="mt-2 max-w-[76px] text-[13px] font-semibold leading-[17px] text-slate-900">${escapeHtml(item.label)}</span>
+            <span class="mt-2 max-w-[84px] text-[13px] font-bold leading-[17px] text-slate-900">${escapeHtml(item.label)}</span>
           </button>
         `;
         const renderStatMenuCard = section => `
-          <section class="surface-card stat-menu-card px-5 pb-5 pt-6">
-            <h2 class="mb-6 text-[22px] font-black leading-none text-slate-950">${escapeHtml(section.title)}</h2>
-            <div class="grid grid-cols-4 gap-x-3 gap-y-6">
+          <section class="surface-card stat-menu-card stat-card-${section.kind} px-5 pb-5 pt-6">
+            <div class="relative z-10 mb-6 flex items-center justify-between">
+              <h2 class="stat-section-title text-[22px] font-black leading-none text-slate-950">${escapeHtml(section.title)}</h2>
+              <span class="rounded-xl bg-white/75 px-2.5 py-1 text-[11px] font-bold text-slate-500 shadow-[inset_0_0_0_1px_rgba(226,232,240,.7)]">${section.items.length}项</span>
+            </div>
+            <div class="relative z-10 grid grid-cols-4 gap-x-2 gap-y-5">
               ${section.items.map(renderStatMenuItem).join("")}
             </div>
           </section>
         `;
-        $("#report-container").innerHTML = statMenuSections.map(renderStatMenuCard).join("");
+        $("#report-container").innerHTML = `
+          <header class="stat-page-hero px-5 py-5">
+            <div class="relative z-10 flex items-end justify-between gap-4">
+              <div>
+                <p class="text-xs font-semibold text-white/66">数据中心</p>
+                <h1 class="mt-2 text-[28px] font-black leading-none text-white">统计</h1>
+                <p class="mt-2 text-sm font-medium text-white/72">交易 · 报表</p>
+              </div>
+              <div class="flex h-16 w-16 shrink-0 flex-col items-center justify-center rounded-[22px] bg-white/16 text-white shadow-[inset_0_1px_0_rgba(255,255,255,.24)] backdrop-blur">
+                <span class="text-2xl font-black leading-none">${totalStatMenus}</span>
+                <span class="mt-1 text-[10px] font-bold text-white/66">入口</span>
+              </div>
+            </div>
+          </header>
+          ${statMenuSections.map(renderStatMenuCard).join("")}
+        `;
         createIcons();
         return;
 
