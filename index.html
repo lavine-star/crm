@@ -364,6 +364,41 @@
             font-weight: 800;
             line-height: 16px;
         }
+        .stat-field-chip {
+            min-height: 34px;
+            border-radius: 11px;
+            background: #f8fafc;
+            border: 1px solid rgba(226, 232, 240, .86);
+            color: #334155;
+            font-size: 12px;
+            font-weight: 700;
+            line-height: 16px;
+            padding: .5rem .625rem;
+        }
+        .stat-field-list-row {
+            display: grid;
+            grid-template-columns: 30px minmax(104px, .9fr) minmax(118px, 1.1fr);
+            gap: .5rem;
+            align-items: center;
+            min-width: 0;
+            padding: .625rem .75rem;
+            border-radius: 12px;
+            background: #f8fafc;
+            border: 1px solid rgba(226, 232, 240, .72);
+        }
+        .stat-field-list-row + .stat-field-list-row { margin-top: .5rem; }
+        .stat-field-order {
+            width: 24px;
+            height: 24px;
+            border-radius: 8px;
+            background: #eff6ff;
+            color: var(--brand);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 800;
+        }
         .subtle-card {
             background: rgba(248, 250, 252, .9);
             border: 1px solid rgba(226, 232, 240, .78);
@@ -1687,7 +1722,10 @@
         customerTab: "public",
         customerPrivateScope: "my",
         customerTodoScope: "my",
+        reportMode: "menu",
         reportTab: "sales",
+        statPage: "",
+        statScope: "my",
         detailTab: "info",
         currentDetail: null,
         currentType: null,
@@ -1777,6 +1815,66 @@
     const reports = {
         sales: { title: "销售客情统计", badge: "236", rows: [["私海池总量", 84, "236"], ["协作总数", 48, "57"], ["平均跟进周期", 42, "3.2天"], ["跟进次数", 72, "568"]], note: "本月销售侧私海池稳定增长，客户跟进完成率较上周提升 8.6%。" },
         dept: { title: "部门客情统计", badge: "486", rows: [["我的私海池", 52, "118"], ["下属私海池", 76, "268"], ["部门公海池", 64, "143"], ["客户待办完成率", 72, "72%"]], note: "部门视角下，下属私海池贡献主要增量，公海线索申领效率提升明显。" }
+    };
+
+    const pcStatPages = {
+        collectionAccount: {
+            title: "收款账号",
+            parent: "全球收款",
+            tabs: ["我的账号", "下属账号"],
+            filters: ["申请编号", "Client", "Group", "客户类型", "客户状态", "客户阶段", "收款国家/地区", "收款银行", "币种", "店铺名称", "店铺平台", "状态", "分配状态", "归属销售", "创建时间", "账号分配时间", "账号激活时间", "账号注销时间"],
+            columns: ["申请编号", "Client", "Group", "客户类型", "客户状态", "客户阶段", "归属销售", "注册渠道", "收款国家/地区", "收款银行", "银行账号", "币种", "店铺名称", "店铺平台", "状态", "分配状态", "创建时间", "账号分配时间", "账号激活时间", "账号注销时间", "操作"],
+            detailSections: [
+                { title: "客户信息", fields: ["Client ID", "Client", "Group ID", "Group", "客户英文名", "客户类型", "客户状态", "客户阶段", "开户时间", "首次交易日期", "末次交易日期", "归属销售"] },
+                { title: "账号信息", fields: ["申请编号", "注册渠道", "店铺名称", "店铺平台", "收款国家/地区", "收款银行", "币种", "银行账号", "状态", "创建时间", "分配状态", "账号分配时间", "账号激活时间", "账号注销时间"] }
+            ]
+        },
+        collectionIncoming: {
+            title: "收款入账",
+            parent: "全球收款",
+            tabs: ["我的入账", "下属入账"],
+            filters: ["入账编号", "Client", "Group", "客户类型", "客户状态", "入账币种", "收款银行", "地区-平台", "账号状态", "入账文件状态", "入账时间", "完成时间", "归属销售"],
+            columns: ["入账编号", "Client", "Group", "客户类型", "客户状态", "归属销售", "注册渠道", "入账币种", "入账金额", "折美金额", "手续费金额", "手续费折美", "汇款方国家", "地区-平台", "收款银行", "店铺名称", "银行账号", "账号状态", "入账文件状态", "入账时间", "完成时间", "操作"],
+            detailSections: [
+                { title: "客户信息", fields: ["Client ID", "Client", "Group ID", "Group", "客户英文名", "客户类型", "客户状态", "开户时间", "首次交易日期", "末次交易日期", "归属销售"] },
+                { title: "入账信息", fields: ["入账编号", "入账时间", "完成时间", "注册渠道", "入账币种", "入账金额", "折美金额", "手续费金额", "手续费折美", "店铺名称", "地区-平台", "汇款方国家", "收款银行", "银行账号", "账号状态", "入账文件状态"] }
+            ]
+        },
+        globalPay: {
+            title: "全球付款",
+            parent: "全球支付",
+            tabs: ["我的付款", "下属付款"],
+            filters: ["交易编号", "Client", "Group", "客户类型", "客户状态", "客户阶段", "交易类型", "买入币种", "卖出币种", "收款人地区", "交易状态", "合规状态", "交易时间", "合规通过时间", "出账完成时间", "归属销售"],
+            columns: ["交易编号", "Client", "Group", "客户类型", "客户状态", "客户阶段", "归属销售", "注册渠道", "交易类型", "买入", "卖出", "交易量折美", "手续费折美", "IND", "收款人地区", "交易状态", "合规状态", "交易时间", "合规通过时间", "出账完成时间", "操作"],
+            detailSections: [
+                { title: "客户信息", fields: ["Client ID", "Client", "Group ID", "Group", "客户英文名", "客户类型", "客户状态", "客户阶段", "开户时间", "首次交易日期", "末次交易日期", "归属销售"] },
+                { title: "付款信息", fields: ["交易编号", "注册渠道", "交易类型", "手续费类型", "手续费币种/金额", "收款人地区", "买入", "卖出", "客户汇率", "手续费折美", "交易量折美", "IND", "交易时间", "合规通过时间", "出账完成时间", "交易状态", "合规状态"] }
+            ]
+        },
+        fxSettlement: {
+            title: "结汇付款",
+            parent: "全球支付",
+            tabs: ["我的付款", "下属付款"],
+            filters: ["交易编号", "Client", "Group", "客户类型", "客户状态", "客户阶段", "下发渠道", "贸易类型", "分发文件状态", "卖出币种", "交易状态", "结汇状态", "合规状态", "交易时间", "合规通过时间", "出账完成时间", "分发完成时间", "归属销售"],
+            columns: ["交易编号", "Client", "Group", "客户类型", "客户状态", "客户阶段", "归属销售", "注册渠道", "交易类型", "下发渠道", "贸易类型", "分发文件状态", "分发笔数", "买入", "卖出", "交易量折美", "手续费折美", "IND", "交易状态", "结汇状态", "合规状态", "交易时间", "合规通过时间", "出账完成时间", "分发完成时间", "操作"],
+            detailSections: [
+                { title: "客户信息", fields: ["Client ID", "Client", "Group ID", "Group", "客户英文名", "客户类型", "客户状态", "客户阶段", "开户时间", "首次交易日期", "末次交易日期", "归属销售"] },
+                { title: "付款信息", fields: ["交易编号", "注册渠道", "下发渠道", "交易类型", "贸易类型", "对私/对公", "分发笔数", "买入", "卖出", "客户汇率", "交易量折美", "手续费币种", "客户手续费金额", "手续费折美", "IND", "交易状态", "结汇状态", "合规状态", "分发文件状态", "交易时间", "合规通过时间", "出账完成时间", "分发完成时间"] }
+            ]
+        }
+    };
+
+    const reportFieldSpecs = {
+        sales: {
+            filters: ["本周", "本月", "本季", "本年", "开始日期", "结束日期", "查询", "重置"],
+            kpis: ["我的私海", "线索", "客户", "我的协作", "线索", "客户", "平均跟进周期", "线索", "客户", "添加跟进数量", "线索", "客户"],
+            modules: ["客源转化漏斗", "线索", "意向", "注册", "开户", "交易", "客户生命周期分布", "未开户", "未激活", "活跃", "沉默", "流失", "客户待办状态分布", "待完成", "待审核", "已完成", "跟进趋势", "线索跟进", "客户跟进"]
+        },
+        dept: {
+            filters: ["部门", "包含子部门", "员工", "本周", "本月", "本季", "本年", "开始日期", "结束日期", "查询", "重置"],
+            kpis: ["我的私海", "线索", "客户", "下属私海", "线索", "客户", "部门公海", "线索", "客户", "平均跟进周期", "我的", "下属", "添加跟进数量", "我的", "下属"],
+            modules: ["客源转化漏斗", "线索", "意向", "注册", "开户", "交易", "客源生命周期分布", "未开户", "未激活", "活跃", "沉默", "流失", "客户待办状态分布", "状态", "部门", "待完成", "待审核", "已完成", "客源趋势分析", "同比", "环比", "线索", "客户", "客源分布", "线索", "客户", "客源跟进分布", "线索跟进", "客户跟进"]
+        }
     };
 
     const $ = (selector, root = document) => root.querySelector(selector);
@@ -2469,15 +2567,23 @@
     }
 
     function renderReports() {
+        if (state.reportMode === "field") {
+            renderStatFieldPage();
+            return;
+        }
+        if (state.reportMode === "detail") {
+            renderReportDetail();
+            return;
+        }
         const statMenuSections = [
             {
                 title: "交易",
                 kind: "trade",
                 items: [
-                    { label: "收款帐号", icon: "wallet", a: "#dbeafe", b: "#eef6ff", fg: "#2563eb", shadow: "rgba(37,99,235,.45)" },
-                    { label: "收款入账", icon: "banknote", a: "#dcfce7", b: "#f0fdf4", fg: "#059669", shadow: "rgba(5,150,105,.42)" },
-                    { label: "全球付款", icon: "globe-2", a: "#cffafe", b: "#ecfeff", fg: "#0891b2", shadow: "rgba(8,145,178,.42)" },
-                    { label: "结汇付款", icon: "landmark", a: "#fef3c7", b: "#fff7ed", fg: "#d97706", shadow: "rgba(217,119,6,.42)" },
+                    { label: "收款账号", icon: "wallet", page: "collectionAccount", a: "#dbeafe", b: "#eef6ff", fg: "#2563eb", shadow: "rgba(37,99,235,.45)" },
+                    { label: "收款入账", icon: "banknote", page: "collectionIncoming", a: "#dcfce7", b: "#f0fdf4", fg: "#059669", shadow: "rgba(5,150,105,.42)" },
+                    { label: "全球付款", icon: "globe-2", page: "globalPay", a: "#cffafe", b: "#ecfeff", fg: "#0891b2", shadow: "rgba(8,145,178,.42)" },
+                    { label: "结汇付款", icon: "landmark", page: "fxSettlement", a: "#fef3c7", b: "#fff7ed", fg: "#d97706", shadow: "rgba(217,119,6,.42)" },
                     { label: "批量分发", icon: "send", a: "#e0e7ff", b: "#eef2ff", fg: "#4f46e5", shadow: "rgba(79,70,229,.42)" },
                     { label: "货币兑换", icon: "coins", a: "#ffedd5", b: "#fff7ed", fg: "#f97316", shadow: "rgba(249,115,22,.42)" },
                     { label: "汇率管理", icon: "percent", a: "#ede9fe", b: "#faf5ff", fg: "#7c3aed", shadow: "rgba(124,58,237,.42)" },
@@ -2492,22 +2598,27 @@
                 title: "报表",
                 kind: "report",
                 items: [
-                    { label: "销售客情统计", icon: "line-chart", a: "#dbeafe", b: "#eff6ff", fg: "#2563eb", shadow: "rgba(37,99,235,.42)" },
-                    { label: "部门客情统计", icon: "building-2", a: "#dcfce7", b: "#f0fdf4", fg: "#059669", shadow: "rgba(5,150,105,.42)" },
+                    { label: "销售客情统计", icon: "line-chart", tab: "sales", a: "#dbeafe", b: "#eff6ff", fg: "#2563eb", shadow: "rgba(37,99,235,.42)" },
+                    { label: "部门客情统计", icon: "building-2", tab: "dept", a: "#dcfce7", b: "#f0fdf4", fg: "#059669", shadow: "rgba(5,150,105,.42)" },
                     { label: "销售业务统计", icon: "pie-chart", a: "#fef3c7", b: "#fff7ed", fg: "#d97706", shadow: "rgba(217,119,6,.42)" },
                     { label: "部门业务统计", icon: "layers", a: "#ede9fe", b: "#faf5ff", fg: "#7c3aed", shadow: "rgba(124,58,237,.42)" }
                 ]
             }
         ];
         const totalStatMenus = statMenuSections.reduce((sum, section) => sum + section.items.length, 0);
-        const renderStatMenuItem = item => `
-          <button type="button" class="stat-menu-item pressable flex w-full flex-col items-center text-center" data-toast="${escapeHtml(item.label)}已打开">
+        const renderStatMenuItem = item => {
+            const attrs = item.page
+                ? `data-stat-page="${item.page}"`
+                : item.tab ? `data-report-detail="${item.tab}"` : `data-toast="${escapeHtml(item.label)}已打开"`;
+            return `
+          <button type="button" class="stat-menu-item pressable flex w-full flex-col items-center text-center" ${attrs}>
             <span class="stat-menu-icon flex items-center justify-center" style="--tile-a:${item.a};--tile-b:${item.b};--tile-fg:${item.fg};--tile-shadow:${item.shadow};">
               <i data-lucide="${item.icon}" class="w-7 h-7"></i>
             </span>
             <span class="stat-menu-label">${escapeHtml(item.label)}</span>
           </button>
         `;
+        };
         const renderStatMenuCard = section => `
           <section class="surface-card stat-menu-card stat-card-${section.kind} px-4 pb-4 pt-5">
             <div class="relative z-10 mb-5 flex items-center justify-between">
@@ -2536,6 +2647,260 @@
         `;
         createIcons();
         return;
+
+        function sampleStatFieldValue(label, pageTitle = "") {
+            const map = {
+                "申请编号": "VA202607230001",
+                "入账编号": "TI202607230001",
+                "交易编号": "TXN202607230001",
+                "Client": "上海绵捷软件有限公司",
+                "Client ID": "GH000115",
+                "客户ID": "GH000115",
+                "Group": "跨境电商客户组",
+                "Group ID": "GRP-SH-001",
+                "客户英文名": "Mianjie Software Co., Ltd.",
+                "客户类型": "企业客户",
+                "客户状态": "正常",
+                "客户阶段": "交易",
+                "归属销售": "陈亦舟",
+                "注册渠道": "CRM手动创建",
+                "收款国家/地区": "US - 美国",
+                "收款银行": "JPMorgan Chase Bank",
+                "银行账号": "**** 4821",
+                "币种": "USD",
+                "店铺名称": "Amazon US Flagship",
+                "店铺平台": "Amazon",
+                "状态": "已激活",
+                "分配状态": "已分配",
+                "创建时间": "2026-07-23 10:18",
+                "账号分配时间": "2026-07-23 10:28",
+                "账号激活时间": "2026-07-23 11:02",
+                "账号注销时间": "-",
+                "入账币种": "USD",
+                "入账金额": "12,430.00 USD",
+                "折美金额": "12,430.00",
+                "手续费金额": "18.00 USD",
+                "手续费折美": "18.00",
+                "汇款方国家": "US - 美国",
+                "地区-平台": "US - Amazon",
+                "账号状态": "已通过",
+                "入账文件状态": "已通过",
+                "入账时间": "2026-07-23 09:40",
+                "完成时间": "2026-07-23 10:05",
+                "交易类型": pageTitle === "结汇付款" ? "分发" : "第三方付款",
+                "买入币种": "USD",
+                "卖出币种": "CNH",
+                "买入": "12,430.00 USD",
+                "卖出": "89,260.00 CNH",
+                "收款人地区": "HK - 中国香港",
+                "交易状态": "出账成功",
+                "合规状态": "通过",
+                "交易时间": "2026-07-23 09:38",
+                "合规通过时间": "2026-07-23 09:58",
+                "出账完成时间": "2026-07-23 10:20",
+                "下发渠道": "寻汇支付",
+                "贸易类型": "货物贸易B2C-电商",
+                "分发文件状态": "备案成功",
+                "结汇状态": "出账成功",
+                "分发完成时间": "2026-07-23 10:35",
+                "分发笔数": "3",
+                "交易量折美": "12,430.00",
+                "手续费类型": "SHA",
+                "手续费币种/金额": "18.00 USD",
+                "客户汇率": "7.1802",
+                "IND": "82.16",
+                "对私/对公": "对公",
+                "手续费币种": "USD",
+                "客户手续费金额": "18.00",
+                "客户卖出金额": "89,260.00",
+                "操作": "详情"
+            };
+            return map[label] || "-";
+        }
+
+        function renderOrderedFields(fields, pageTitle = "") {
+            return fields.map((label, index) => `
+          <div class="stat-field-list-row">
+            <span class="stat-field-order">${String(index + 1).padStart(2, "0")}</span>
+            <span class="min-w-0 truncate text-xs font-bold text-slate-600">${escapeHtml(label)}</span>
+            <span class="min-w-0 truncate text-xs font-semibold text-slate-900">${escapeHtml(sampleStatFieldValue(label, pageTitle))}</span>
+          </div>
+        `).join("");
+        }
+
+        function renderFieldChipList(fields) {
+            return fields.map((label, index) => `
+          <span class="stat-field-chip inline-flex items-center gap-1.5">
+            <b class="text-[10px] text-brand-600">${index + 1}</b>${escapeHtml(label)}
+          </span>
+        `).join("");
+        }
+
+        function statFilterPreview(label, pageTitle = "") {
+            if (/时间|日期/.test(label)) return "本月";
+            if (/状态/.test(label)) return "全部状态";
+            if (/币种/.test(label)) return sampleStatFieldValue(label, pageTitle) === "-" ? "全部币种" : sampleStatFieldValue(label, pageTitle);
+            if (/归属销售/.test(label)) return "我的团队";
+            const value = sampleStatFieldValue(label, pageTitle);
+            return value === "-" ? "全部" : value;
+        }
+
+        function statInfoRows(fields, pageTitle = "", mode = "value") {
+            return fields.map((label, index) => {
+                const value = mode === "filter" ? statFilterPreview(label, pageTitle) : sampleStatFieldValue(label, pageTitle);
+                return {
+                    label: `${String(index + 1).padStart(2, "0")} ${label}`,
+                    value,
+                    full: /Client|Group|编号|账号|银行|国家|地区|平台|渠道|时间|完成|文件状态|手续费币种\/金额/.test(label)
+                };
+            });
+        }
+
+        function statRecordMeta(page) {
+            const key = state.statPage || "collectionAccount";
+            const map = {
+                collectionAccount: {
+                    idField: "申请编号",
+                    icon: "wallet",
+                    chips: ["企业客户", "交易", "已激活", "已分配"],
+                    action: "查看账号详情",
+                    summary: [
+                        { label: "Client", value: sampleStatFieldValue("Client", page.title), full: true },
+                        { label: "收款银行", value: sampleStatFieldValue("收款银行", page.title) },
+                        { label: "币种", value: sampleStatFieldValue("币种", page.title) },
+                        { label: "账号状态", value: sampleStatFieldValue("状态", page.title) },
+                        { label: "创建时间", value: sampleStatFieldValue("创建时间", page.title) }
+                    ]
+                },
+                collectionIncoming: {
+                    idField: "入账编号",
+                    icon: "banknote",
+                    chips: ["企业客户", "正常", "已通过", "USD"],
+                    action: "查看入账详情",
+                    summary: [
+                        { label: "Client", value: sampleStatFieldValue("Client", page.title), full: true },
+                        { label: "入账金额", value: sampleStatFieldValue("入账金额", page.title) },
+                        { label: "入账币种", value: sampleStatFieldValue("入账币种", page.title) },
+                        { label: "文件状态", value: sampleStatFieldValue("入账文件状态", page.title) },
+                        { label: "入账时间", value: sampleStatFieldValue("入账时间", page.title) }
+                    ]
+                },
+                globalPay: {
+                    idField: "交易编号",
+                    icon: "globe-2",
+                    chips: ["第三方付款", "出账成功", "合规通过", "USD/CNH"],
+                    action: "查看付款详情",
+                    summary: [
+                        { label: "Client", value: sampleStatFieldValue("Client", page.title), full: true },
+                        { label: "买入", value: sampleStatFieldValue("买入", page.title) },
+                        { label: "卖出", value: sampleStatFieldValue("卖出", page.title) },
+                        { label: "收款人地区", value: sampleStatFieldValue("收款人地区", page.title) },
+                        { label: "交易时间", value: sampleStatFieldValue("交易时间", page.title) }
+                    ]
+                },
+                fxSettlement: {
+                    idField: "交易编号",
+                    icon: "landmark",
+                    chips: ["分发", "出账成功", "结汇成功", "合规通过"],
+                    action: "查看结汇详情",
+                    summary: [
+                        { label: "Client", value: sampleStatFieldValue("Client", page.title), full: true },
+                        { label: "下发渠道", value: sampleStatFieldValue("下发渠道", page.title) },
+                        { label: "买入", value: sampleStatFieldValue("买入", page.title) },
+                        { label: "卖出", value: sampleStatFieldValue("卖出", page.title) },
+                        { label: "分发完成时间", value: sampleStatFieldValue("分发完成时间", page.title) }
+                    ]
+                }
+            };
+            return map[key] || map.collectionAccount;
+        }
+
+        function renderStatFieldPage() {
+            const page = pcStatPages[state.statPage] || pcStatPages.collectionAccount;
+            const pageKey = state.statPage || "collectionAccount";
+            const records = [0, 1].map(index => statPageRecord(pageKey, page, index));
+            $("#report-container").innerHTML = `
+        <div class="-mx-5 -mt-4 sticky top-0 bg-[#f3f5f9]/95 backdrop-blur-md z-30 px-5 pt-2 pb-3">
+          <div class="flex items-center gap-3 mb-4">
+            <button type="button" class="secondary-action h-10 w-10 flex items-center justify-center shrink-0" data-report-menu aria-label="返回统计菜单">
+              <i data-lucide="chevron-left" class="w-5 h-5"></i>
+            </button>
+            <div class="search-control flex-1 bg-white rounded-xl h-10 flex items-center px-3 border border-slate-200 shadow-soft-sm">
+              <i data-lucide="search" class="w-4 h-4 text-gray-400"></i>
+              <input type="text" placeholder="搜索${escapeHtml(page.title)}、Client、Group" class="w-full bg-transparent border-none outline-none text-sm ml-2 text-gray-700 placeholder-gray-400" data-clearable-input>
+              <button class="date-inline-action hidden ml-1" type="button" data-clear-input aria-label="清除搜索"><i data-lucide="x" class="w-4 h-4"></i></button>
+            </div>
+            <button type="button" class="pressable icon-action w-10 h-10 flex items-center justify-center shrink-0" data-open-filter="stat" aria-label="筛选">
+              <i data-lucide="sliders-horizontal" class="w-4 h-4"></i>
+            </button>
+          </div>
+          <div class="segment-shell p-1 grid grid-cols-2 gap-1">
+            ${page.tabs.map((tab, index) => {
+                const scope = index === 0 ? "my" : "sub";
+                return `<button type="button" data-stat-scope="${scope}" class="${state.statScope === scope ? "seg-on" : "seg-off"} py-1.5 text-sm font-medium rounded-lg transition-all">${escapeHtml(tab)}</button>`;
+            }).join("")}
+          </div>
+        </div>
+
+        ${records.map(record => `
+          <article class="surface-card p-4 relative overflow-hidden card-active" data-stat-detail="${escapeHtml(pageKey)}" data-stat-record="${record.index}">
+            <div class="flex justify-between items-start relative z-10 mb-3">
+              <div class="flex-1 pr-2 min-w-0">
+                <p class="text-[11px] text-slate-400 font-mono mb-1">${escapeHtml(record.id)}</p>
+                <h3 class="text-base font-bold text-gray-900 leading-tight truncate">${escapeHtml(record.title)}</h3>
+                ${renderCardChips(record.chips)}
+              </div>
+              <span class="w-9 h-9 rounded-[13px] bg-brand-50 text-brand-600 flex items-center justify-center shrink-0">
+                <i data-lucide="${record.icon}" class="w-4 h-4"></i>
+              </span>
+            </div>
+            ${renderInfoGrid(record.rows)}
+            <div class="grid grid-cols-1 gap-2 mt-4">
+              <button class="secondary-action h-9 text-xs" data-stat-detail="${escapeHtml(pageKey)}" data-stat-record="${record.index}" data-stop>${escapeHtml(record.action)}</button>
+            </div>
+          </article>
+        `).join("")}
+      `;
+            createIcons();
+        }
+
+        function renderReportFieldSpecCard(type) {
+            const spec = reportFieldSpecs[type] || reportFieldSpecs.sales;
+            return `
+        <section class="surface-card p-4">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="w-8 h-8 rounded-[12px] bg-blue-50 text-brand-600 flex items-center justify-center"><i data-lucide="list-checks" class="w-4 h-4"></i></span>
+            <div>
+              <h2 class="text-base font-black text-slate-950">PC字段顺序</h2>
+              <p class="text-xs text-slate-400 mt-0.5">按 PC 端筛选、KPI、模块字段顺序展示</p>
+            </div>
+          </div>
+          <div class="space-y-3">
+            <div><p class="mb-2 text-xs font-bold text-slate-500">筛选字段</p><div class="flex flex-wrap gap-2">${renderFieldChipList(spec.filters)}</div></div>
+            <div><p class="mb-2 text-xs font-bold text-slate-500">KPI字段</p><div class="flex flex-wrap gap-2">${renderFieldChipList(spec.kpis)}</div></div>
+            <div><p class="mb-2 text-xs font-bold text-slate-500">模块字段</p><div class="flex flex-wrap gap-2">${renderFieldChipList(spec.modules)}</div></div>
+          </div>
+        </section>
+      `;
+        }
+
+        function renderReportDetail() {
+            const title = state.reportTab === "dept" ? "部门客情统计" : "销售客情统计";
+            const detailHeader = () => `
+        <header class="flex items-center justify-between gap-3">
+          <button type="button" class="secondary-action h-10 w-10 flex items-center justify-center shrink-0" data-report-menu aria-label="返回统计菜单">
+            <i data-lucide="chevron-left" class="w-5 h-5"></i>
+          </button>
+          <div class="min-w-0 flex-1">
+            <h1 class="truncate text-xl font-black leading-none text-slate-950">${title}</h1>
+            <p class="mt-1 text-xs font-medium text-slate-500">统计 / ${title}</p>
+          </div>
+        </header>
+      `;
+            const finishReportDetail = () => {
+                $("#report-container").innerHTML = detailHeader() + renderReportFieldSpecCard(state.reportTab) + $("#report-container").innerHTML;
+                createIcons();
+            };
 
         if (state.reportTab === "sales") {
             $("#report-container").innerHTML = `
@@ -2689,7 +3054,7 @@
             </div>
           </section>
         `;
-            createIcons();
+            finishReportDetail();
             return;
         }
         $("#report-container").innerHTML = `
@@ -2931,7 +3296,196 @@
           </div>
         </section>
       `;
+        finishReportDetail();
+        }
+    }
+
+    function statSampleValue(label, pageTitle = "", index = 0) {
+        const base = {
+            "申请编号": "VA202607230001",
+            "入账编号": "TI202607230001",
+            "交易编号": "TXN202607230001",
+            "Client": "上海绵捷软件有限公司",
+            "Client ID": "GH000115",
+            "客户ID": "GH000115",
+            "Group": "跨境电商客户组",
+            "Group ID": "GRP-SH-001",
+            "客户英文名": "Mianjie Software Co., Ltd.",
+            "客户类型": "企业客户",
+            "客户状态": "正常",
+            "客户阶段": "交易",
+            "归属销售": "陈亦舟",
+            "注册渠道": "CRM手动创建",
+            "收款国家/地区": "US - 美国",
+            "收款银行": "JPMorgan Chase Bank",
+            "银行账号": "**** 4821",
+            "币种": "USD",
+            "店铺名称": "Amazon US Flagship",
+            "店铺平台": "Amazon",
+            "状态": "已激活",
+            "分配状态": "已分配",
+            "创建时间": "2026-07-23 10:18",
+            "账号分配时间": "2026-07-23 10:28",
+            "账号激活时间": "2026-07-23 11:02",
+            "账号注销时间": "-",
+            "入账币种": "USD",
+            "入账金额": "12,430.00 USD",
+            "折美金额": "12,430.00",
+            "手续费金额": "18.00 USD",
+            "手续费折美": "18.00",
+            "汇款方国家": "US - 美国",
+            "地区-平台": "US - Amazon",
+            "账号状态": "已通过",
+            "入账文件状态": "已通过",
+            "入账时间": "2026-07-23 09:40",
+            "完成时间": "2026-07-23 10:05",
+            "交易类型": pageTitle === "结汇付款" ? "分发" : "第三方付款",
+            "买入币种": "USD",
+            "卖出币种": "CNH",
+            "买入": "12,430.00 USD",
+            "卖出": "89,260.00 CNH",
+            "收款人地区": "HK - 中国香港",
+            "交易状态": "出账成功",
+            "合规状态": "通过",
+            "交易时间": "2026-07-23 09:38",
+            "合规通过时间": "2026-07-23 09:58",
+            "出账完成时间": "2026-07-23 10:20",
+            "下发渠道": "寻汇支付",
+            "贸易类型": "货物贸易B2C-电商",
+            "分发文件状态": "备案成功",
+            "结汇状态": "出账成功",
+            "分发完成时间": "2026-07-23 10:35",
+            "分发笔数": "3",
+            "交易量折美": "12,430.00",
+            "手续费类型": "SHA",
+            "手续费币种/金额": "18.00 USD",
+            "客户汇率": "7.1802",
+            "IND": "82.16",
+            "对私/对公": "对公",
+            "手续费币种": "USD",
+            "客户手续费金额": "18.00",
+            "客户卖出金额": "89,260.00",
+            "操作": "详情"
+        };
+        const alternate = {
+            "申请编号": "VA202607230002",
+            "入账编号": "TI202607230002",
+            "交易编号": "TXN202607230002",
+            "Client": "辰曜跨境供应链科技有限公司",
+            "Client ID": "GH000088",
+            "客户ID": "GH000088",
+            "Group": "贸易服务客户组",
+            "Group ID": "GRP-SH-002",
+            "客户英文名": "Chenyao Cross-border Supply Chain Co., Ltd.",
+            "归属销售": "李璟",
+            "收款国家/地区": "HK - 中国香港",
+            "收款银行": "HSBC Hong Kong",
+            "银行账号": "**** 7314",
+            "店铺名称": "Shopee Asia Store",
+            "店铺平台": "Shopee",
+            "创建时间": "2026-07-22 16:15",
+            "账号分配时间": "2026-07-22 16:28",
+            "账号激活时间": "2026-07-22 17:02",
+            "入账金额": "8,960.00 USD",
+            "折美金额": "8,960.00",
+            "手续费金额": "12.00 USD",
+            "手续费折美": "12.00",
+            "地区-平台": "HK - Shopee",
+            "入账时间": "2026-07-22 15:40",
+            "完成时间": "2026-07-22 16:05",
+            "买入": "8,960.00 USD",
+            "卖出": "64,332.00 CNH",
+            "收款人地区": "SG - 新加坡",
+            "交易时间": "2026-07-22 15:38",
+            "合规通过时间": "2026-07-22 15:58",
+            "出账完成时间": "2026-07-22 16:20",
+            "分发完成时间": "2026-07-22 16:35",
+            "分发笔数": "2",
+            "交易量折美": "8,960.00",
+            "客户汇率": "7.1799",
+            "IND": "58.42"
+        };
+        return (index === 1 ? alternate[label] : "") || base[label] || "-";
+    }
+
+    function statRowsFromLabels(fields, pageTitle = "", index = 0) {
+        return fields.map(label => ({
+            label,
+            value: statSampleValue(label, pageTitle, index)
+        }));
+    }
+
+    function statPageRecord(pageKey, page, index = 0) {
+        const config = {
+            collectionAccount: {
+                idField: "申请编号",
+                icon: "wallet",
+                chips: index === 1 ? ["企业客户", "正常", "已通过", "USD"] : ["企业客户", "交易", "已激活", "已分配"],
+                action: "查看账号详情",
+                summary: ["Group", "收款国家/地区", "收款银行", "币种", "状态", "创建时间"]
+            },
+            collectionIncoming: {
+                idField: "入账编号",
+                icon: "banknote",
+                chips: ["企业客户", "正常", "已通过", "USD"],
+                action: "查看入账详情",
+                summary: ["Group", "入账金额", "入账币种", "入账文件状态", "入账时间", "完成时间"]
+            },
+            globalPay: {
+                idField: "交易编号",
+                icon: "globe-2",
+                chips: ["第三方付款", "出账成功", "合规通过", "USD/CNH"],
+                action: "查看付款详情",
+                summary: ["Group", "买入", "卖出", "收款人地区", "交易状态", "交易时间"]
+            },
+            fxSettlement: {
+                idField: "交易编号",
+                icon: "landmark",
+                chips: ["分发", "出账成功", "结汇成功", "合规通过"],
+                action: "查看结汇详情",
+                summary: ["Group", "下发渠道", "买入", "卖出", "分发文件状态", "分发完成时间"]
+            }
+        }[pageKey] || {};
+        return {
+            index,
+            id: statSampleValue(config.idField || "交易编号", page.title, index),
+            title: statSampleValue("Client", page.title, index),
+            icon: config.icon || "file-text",
+            chips: config.chips || ["企业客户", "正常"],
+            action: config.action || "查看详情",
+            rows: statRowsFromLabels(config.summary || page.columns.slice(0, 6), page.title, index)
+        };
+    }
+
+    function openStatRecordDetail(pageKey, index = 0) {
+        const page = pcStatPages[pageKey] || pcStatPages.collectionAccount;
+        const record = statPageRecord(pageKey, page, Number(index) || 0);
+        state.currentType = "stat";
+        state.currentDetail = record;
+        const detailContent = $("#detail-content");
+        detailContent.classList.remove("pb-24");
+        detailContent.classList.add("pb-6");
+        detailContent.innerHTML = `
+        <section class="surface-card p-5 mb-4">
+          <div class="flex items-start justify-between gap-3">
+            <div class="min-w-0">
+              <p class="text-[11px] text-slate-400 font-mono mb-1">${escapeHtml(record.id)}</p>
+              <h2 class="text-xl font-bold text-gray-900 leading-tight truncate">${escapeHtml(record.title)}</h2>
+              <p class="text-xs text-slate-400 mt-1">${escapeHtml(page.parent)} · ${escapeHtml(page.title)}</p>
+              ${renderCardChips(record.chips)}
+            </div>
+            <span class="w-10 h-10 rounded-[14px] bg-brand-50 text-brand-600 flex items-center justify-center shrink-0">
+              <i data-lucide="${record.icon}" class="w-5 h-5"></i>
+            </span>
+          </div>
+        </section>
+        ${renderDetailSection("列表字段", statRowsFromLabels(page.columns, page.title, record.index))}
+        ${page.detailSections.map(section => renderDetailSection(section.title, statRowsFromLabels(section.fields, page.title, record.index))).join("")}
+      `;
+        $("#detail-actions").innerHTML = "";
+        $("#detail-actions").classList.add("hidden");
         createIcons();
+        openDrawer("detail-drawer");
     }
 
     function emptyState(title, desc) {
@@ -3024,7 +3578,27 @@
             "EDD状态": ["无需EDD", "待处理", "已完成"],
             "原销售状态": ["在职", "离职"],
             "当前销售状态": ["在职", "离职"],
-            "生命周期": ["未开户", "未激活", "活跃", "沉默"]
+            "生命周期": ["未开户", "未激活", "活跃", "沉默"],
+            "收款国家/地区": ["US - 美国", "HK - 中国香港", "SG - 新加坡", "EU - 欧盟"],
+            "收款银行": ["JPMorgan Chase Bank", "HSBC Hong Kong", "Citibank", "DBS Bank"],
+            "币种": ["USD", "EUR", "GBP", "CNH", "HKD"],
+            "入账币种": ["USD", "EUR", "GBP", "HKD"],
+            "买入币种": ["USD", "EUR", "GBP", "HKD"],
+            "卖出币种": ["CNH", "USD", "HKD"],
+            "店铺平台": ["Amazon", "Shopee", "Shopify", "TikTok Shop"],
+            "状态": ["全部", "未处理", "已通过", "已激活", "已注销", "已冻结"],
+            "分配状态": ["未分配", "分配中", "已分配", "分配失败"],
+            "账号状态": ["全部", "已通过", "已激活", "已注销"],
+            "入账文件状态": ["全部", "已通过", "待补充", "已驳回"],
+            "交易类型": ["第三方付款", "关联方付款", "分发"],
+            "收款人地区": ["HK - 中国香港", "SG - 新加坡", "US - 美国"],
+            "交易状态": ["全部", "已提交", "已锁汇", "出账中", "出账成功", "交易取消"],
+            "合规状态": ["全部", "处理中", "通过", "驳回", "拒绝"],
+            "下发渠道": ["寻汇支付", "宝付", "银联电子", "浙商银行"],
+            "贸易类型": ["货物贸易B2C-电商", "货物贸易B2B", "服务贸易"],
+            "分发文件状态": ["全部", "备案成功", "待备案", "备案失败"],
+            "结汇状态": ["全部", "出账成功", "出账中", "交易取消"],
+            "归属销售": ["陈亦舟", "李璟", "赵砚", "唐舒"]
         };
         return optionMap[label] || ["全部", "是", "否"];
     }
@@ -3198,13 +3772,22 @@
         });
     }
 
+    function statFilterFieldType(label) {
+        if (/时间|日期/.test(label)) return "date";
+        if (/状态|币种|类型|阶段|国家|地区|银行|平台|渠道|销售|贸易|文件|分配|结汇|合规/.test(label)) return "select";
+        return "text";
+    }
+
     function renderFilter(type) {
+        const isStat = type === "stat";
         const isLead = type === "leads";
-        const title = isLead ? (state.leadTab === "public" ? "线索公海筛选" : "线索私海筛选") : (
+        const statPage = pcStatPages[state.statPage] || pcStatPages.collectionAccount;
+        const title = isStat ? `${statPage.title}筛选` : isLead ? (state.leadTab === "public" ? "线索公海筛选" : "线索私海筛选") : (
             state.customerTab === "public" ? "客户公海筛选" : state.customerTab === "todo" ? "客户待办筛选" : "客户私海筛选"
         );
-        const fields = isLead
-            ? (state.leadTab === "public" ? [
+        const fields = isStat
+            ? statPage.filters.map(label => [label, statFilterFieldType(label)])
+            : isLead ? (state.leadTab === "public" ? [
                 ["所属公海池", "select"], ["线索名称/ID"], ["主联系人"], ["手机号"], ["线索来源", "select"], ["跟进状态", "select"], ["意向状态", "select"], ["意向等级", "select"], ["原销售", "select"], ["最后跟进时间", "date"], ["创建时间", "date"]
             ] : [
                 ["线索名称/ID"], ["主联系人"], ["手机号"], ["线索来源", "select"], ["跟进状态", "select"], ["意向状态", "select"], ["意向等级", "select"], ["客户标签", "select"], ["私有标签", "select"], ...(state.leadPrivateScope === "sub" ? [["管辖部门", "select"], ["当前销售", "select"]] : []), ["最后跟进时间", "date"], ["创建时间", "date"]
@@ -3216,6 +3799,7 @@
             ] : [
                 ["Client"], ["Group"], ["客户类型", "select"], ["客户状态", "select"], ["客户阶段", "select"], ["注册国家", "select"], ["主体状态", "select"], ["EDD状态", "select"], ["注册时间", "date"], ["开户时间", "date"], ["跟进状态", "select"], ...(state.customerPrivateScope === "my" ? [["客户标签", "select"], ["私有标签", "select"]] : [["管辖部门", "select"], ["当前销售", "select"], ["当前销售状态", "select"]]), ["生命周期", "select"], ["最后跟进时间", "date"], ["创建时间", "date"]
             ]);
+        const quickFilters = isStat ? ["全部", "本月", "我的团队", "已通过", "出账成功", "USD"] : ["全部", "待处理", "跟进中", "高意向", "近7天", "本月新增"];
         $("#filter-title").textContent = title;
         $("#filter-content").innerHTML = `
         <div>
@@ -3227,7 +3811,7 @@
         <div>
           <h3 class="text-sm font-bold text-gray-800 mb-3">快捷条件</h3>
           <div class="flex flex-wrap gap-2">
-            ${["全部", "待处理", "跟进中", "高意向", "近7天", "本月新增"].map((item, index) => `<button class="filter-chip px-4 py-1.5 ${index === 0 ? "chip-active" : "bg-gray-100 text-gray-600 border-transparent"} rounded-lg text-xs font-medium border">${item}</button>`).join("")}
+            ${quickFilters.map((item, index) => `<button class="filter-chip px-4 py-1.5 ${index === 0 ? "chip-active" : "bg-gray-100 text-gray-600 border-transparent"} rounded-lg text-xs font-medium border">${item}</button>`).join("")}
           </div>
         </div>
       `;
@@ -3924,6 +4508,9 @@
     function drawDetail() {
         const r = state.currentDetail;
         if (!r) return;
+        const detailContent = $("#detail-content");
+        detailContent.classList.remove("pb-6");
+        detailContent.classList.add("pb-24");
         const isLead = state.currentType === "lead";
         const isTodo = !isLead && state.customerTab === "todo";
         const detailCompanyName = isLead ? r.company : customerDisplayName(r, state.isUnmasked);
@@ -4252,6 +4839,7 @@
                 { label: "关联线索", icon: "link", operation: "link-lead" },
                 { label: "退回公海", icon: "rotate-ccw", operation: "return" }
             ]);
+        $("#detail-actions").classList.remove("hidden");
         $("#detail-actions").innerHTML = `<div class="w-full overflow-x-auto no-scrollbar"><div class="flex gap-2 min-w-max">${actions.map(renderDetailAction).join("")}</div></div>`;
         createIcons();
     }
@@ -4350,6 +4938,30 @@
                 input.dispatchEvent(new Event("input", { bubbles: true }));
                 input.focus();
             }
+            return;
+        }
+
+        const resetFilter = event.target.closest("[data-reset-filter]");
+        if (resetFilter) {
+            const drawer = resetFilter.closest("#filter-drawer");
+            drawer?.querySelectorAll("[data-clearable-input]").forEach(input => {
+                input.value = "";
+                syncClearableInput(input);
+            });
+            drawer?.querySelectorAll(".filter-field").forEach(field => {
+                if (field.querySelector("[data-filter-value]")) setFilterSelectDisplay(field, "请选择", false);
+            });
+            drawer?.querySelectorAll("[data-date-range-field]").forEach(field => {
+                field.dataset.dateStart = "";
+                field.dataset.dateEnd = "";
+                setDateDisplay(field, field.dataset.placeholder || "开始日期 - 结束日期", false);
+                syncDateHidden(field, "");
+                refreshDatePanel(field.querySelector(".filter-date-panel"));
+            });
+            drawer?.querySelectorAll(".filter-chip").forEach((chip, index) => {
+                chip.className = `filter-chip px-4 py-1.5 ${index === 0 ? "chip-active" : "bg-gray-100 text-gray-600 border-transparent"} rounded-lg text-xs font-medium border`;
+            });
+            closeFilterPickers();
             return;
         }
 
@@ -4494,7 +5106,15 @@
         if (!event.target.closest(".filter-field")) closeFilterPickers();
 
         const nav = event.target.closest("[data-nav]");
-        if (nav) switchView(nav.dataset.nav);
+        if (nav) {
+            if (nav.dataset.nav === "reports") {
+                state.reportMode = "menu";
+                state.statPage = "";
+                state.statScope = "my";
+                renderReports();
+            }
+            switchView(nav.dataset.nav);
+        }
 
         const jump = event.target.closest("[data-jump]");
         if (jump) {
@@ -4507,6 +5127,12 @@
                 state.customerTab = jump.dataset.customerShortcut;
                 setSegment($$(".customer-tab"), "customerTab", state.customerTab);
                 renderCustomerList();
+            }
+            if (jump.dataset.jump === "reports") {
+                state.reportMode = "menu";
+                state.statPage = "";
+                state.statScope = "my";
+                renderReports();
             }
             switchView(jump.dataset.jump);
         }
@@ -4544,9 +5170,48 @@
             renderCustomerList();
         }
 
+        const statPage = event.target.closest("[data-stat-page]");
+        if (statPage) {
+            state.reportMode = "field";
+            state.statPage = statPage.dataset.statPage;
+            state.statScope = "my";
+            renderReports();
+            $("#main-scroll-area").scrollTop = 0;
+            return;
+        }
+
+        const statScope = event.target.closest("[data-stat-scope]");
+        if (statScope) {
+            state.statScope = statScope.dataset.statScope;
+            renderReports();
+            return;
+        }
+
+        const reportDetail = event.target.closest("[data-report-detail]");
+        if (reportDetail) {
+            state.reportMode = "detail";
+            state.reportTab = reportDetail.dataset.reportDetail;
+            state.statPage = "";
+            renderReports();
+            $("#main-scroll-area").scrollTop = 0;
+            return;
+        }
+
+        const reportMenu = event.target.closest("[data-report-menu]");
+        if (reportMenu) {
+            state.reportMode = "menu";
+            state.statPage = "";
+            state.statScope = "my";
+            renderReports();
+            $("#main-scroll-area").scrollTop = 0;
+            return;
+        }
+
         const reportTab = event.target.closest("[data-report-tab]");
         if (reportTab) {
+            state.reportMode = "detail";
             state.reportTab = reportTab.dataset.reportTab;
+            state.statPage = "";
             setSegment($$(".report-tab"), "reportTab", state.reportTab);
             renderReports();
         }
@@ -4574,6 +5239,12 @@
         const linkCard = event.target.closest("[data-link-card]");
         if (linkCard) {
             toggleOperationLinkCard(linkCard);
+            return;
+        }
+
+        const statDetail = event.target.closest("[data-stat-detail]");
+        if (statDetail) {
+            openStatRecordDetail(statDetail.dataset.statDetail, statDetail.dataset.statRecord || "0");
             return;
         }
 
