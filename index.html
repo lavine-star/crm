@@ -2210,22 +2210,19 @@
     }
 
     function leadCardActions(item) {
-        const view = `<button class="secondary-action h-9 text-xs" data-detail-type="lead" data-detail-id="${item.id}" data-stop>查看详情</button>`;
-        if (state.leadTab === "public") return `<div class="grid grid-cols-1 gap-2 mt-4">${view}</div>`;
+        if (state.leadTab === "public") return "";
         const action = state.leadPrivateScope === "sub"
             ? `<button class="secondary-action h-9 text-xs" data-toast="${escapeHtml(item.short)}退回公海申请已提交" data-stop>退回公海</button>`
             : `<button class="primary-action h-9 text-xs" data-open-sheet="follow-sheet" data-stop>添加跟进</button>`;
-        return `<div class="grid grid-cols-2 gap-2 mt-4">${view}${action}</div>`;
+        return `<div class="grid grid-cols-1 gap-2 mt-4">${action}</div>`;
     }
 
     function customerCardActions(item) {
-        const viewText = state.customerTab === "todo" ? "查看" : "查看详情";
-        const view = `<button class="secondary-action h-9 text-xs" data-detail-type="customer" data-detail-id="${customerRecordKey(item)}" data-stop>${viewText}</button>`;
-        if (state.customerTab === "public" || state.customerTab === "todo") return `<div class="grid grid-cols-1 gap-2 mt-4">${view}</div>`;
+        if (state.customerTab === "public" || state.customerTab === "todo") return "";
         const follow = state.customerPrivateScope === "my"
             ? `<button class="primary-action h-9 text-xs" data-open-sheet="follow-sheet" data-stop>添加跟进</button>`
             : `<button class="secondary-action h-9 text-xs" data-toast="${escapeHtml(item.short)}退回公海申请已提交" data-stop>退回公海</button>`;
-        return `<div class="grid grid-cols-2 gap-2 mt-4">${view}${follow}</div>`;
+        return `<div class="grid grid-cols-1 gap-2 mt-4">${follow}</div>`;
     }
 
     function customerRecordKey(item) {
@@ -2641,7 +2638,6 @@
                     idField: "申请编号",
                     icon: "wallet",
                     chips: ["企业客户", "交易", "已激活", "已分配"],
-                    action: "查看账号详情",
                     summary: [
                         { label: "Client", value: sampleStatFieldValue("Client", page.title), full: true },
                         { label: "收款银行", value: sampleStatFieldValue("收款银行", page.title) },
@@ -2654,7 +2650,6 @@
                     idField: "入账编号",
                     icon: "banknote",
                     chips: ["企业客户", "正常", "已通过", "USD"],
-                    action: "查看入账详情",
                     summary: [
                         { label: "Client", value: sampleStatFieldValue("Client", page.title), full: true },
                         { label: "入账金额", value: sampleStatFieldValue("入账金额", page.title) },
@@ -2667,7 +2662,6 @@
                     idField: "交易编号",
                     icon: "globe-2",
                     chips: ["第三方付款", "出账成功", "合规通过", "USD/CNH"],
-                    action: "查看付款详情",
                     summary: [
                         { label: "Client", value: sampleStatFieldValue("Client", page.title), full: true },
                         { label: "买入", value: sampleStatFieldValue("买入", page.title) },
@@ -2680,7 +2674,6 @@
                     idField: "交易编号",
                     icon: "landmark",
                     chips: ["分发", "出账成功", "结汇成功", "合规通过"],
-                    action: "查看结汇详情",
                     summary: [
                         { label: "Client", value: sampleStatFieldValue("Client", page.title), full: true },
                         { label: "下发渠道", value: sampleStatFieldValue("下发渠道", page.title) },
@@ -2733,9 +2726,6 @@
               </span>
             </div>
             ${renderInfoGrid(record.rows)}
-            <div class="grid grid-cols-1 gap-2 mt-4">
-              <button class="secondary-action h-9 text-xs" data-stat-detail="${escapeHtml(pageKey)}" data-stat-record="${record.index}" data-stop>${escapeHtml(record.action)}</button>
-            </div>
           </article>
         `).join("")}
       `;
@@ -3279,28 +3269,24 @@
                 idField: "申请编号",
                 icon: "wallet",
                 chips: index === 1 ? ["企业客户", "正常", "已通过", "USD"] : ["企业客户", "交易", "已激活", "已分配"],
-                action: "查看账号详情",
                 summary: ["Group", "收款国家/地区", "收款银行", "币种", "状态", "创建时间"]
             },
             collectionIncoming: {
                 idField: "入账编号",
                 icon: "banknote",
                 chips: ["企业客户", "正常", "已通过", "USD"],
-                action: "查看入账详情",
                 summary: ["Group", "入账金额", "入账币种", "入账文件状态", "入账时间", "完成时间"]
             },
             globalPay: {
                 idField: "交易编号",
                 icon: "globe-2",
                 chips: ["第三方付款", "出账成功", "合规通过", "USD/CNH"],
-                action: "查看付款详情",
                 summary: ["Group", "买入", "卖出", "收款人地区", "交易状态", "交易时间"]
             },
             fxSettlement: {
                 idField: "交易编号",
                 icon: "landmark",
                 chips: ["分发", "出账成功", "结汇成功", "合规通过"],
-                action: "查看结汇详情",
                 summary: ["Group", "下发渠道", "买入", "卖出", "分发文件状态", "分发完成时间"]
             }
         }[pageKey] || {};
@@ -3310,7 +3296,6 @@
             title: statSampleValue("Client", page.title, index),
             icon: config.icon || "file-text",
             chips: config.chips || ["企业客户", "正常"],
-            action: config.action || "查看详情",
             rows: statRowsFromLabels(config.summary || page.columns.slice(0, 6), page.title, index)
         };
     }
